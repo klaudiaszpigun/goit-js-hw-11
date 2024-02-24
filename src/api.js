@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchPhotos = nameOfPhotos => {
+export const fetchData = nameOfPhotos => {
   const key = '42539798-27c3408c7f5dca4caada8a6c7';
   return axios
     .get(

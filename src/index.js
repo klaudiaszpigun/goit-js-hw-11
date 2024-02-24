@@ -1,5 +1,4 @@
-import Notiflix from 'notiflix';
-import { fetchPhotos } from './api';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const input = document.querySelector('input');
 const button = document.querySelector('button');
@@ -7,12 +6,12 @@ const button = document.querySelector('button');
 button.addEventListener('click', async event => {
   event.preventDefault();
   try {
-    const response = await fetchPhotos(input.value);
+    const response = await fetchData(input.value);
     const total = response.total;
     if (total !== undefined && total > 0) {
-      Notiflix.Notify.success(`Hooray! We found ${total}`);
+      Notify.success(`Hooray! We found ${total}`);
     } else {
-      Notiflix.Report.Warning(`Try again`);
+      Notify.failure('Try again');
     }
   } catch (error) {
     console.log(error);
