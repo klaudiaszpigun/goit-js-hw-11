@@ -70,12 +70,12 @@ fetchMore.addEventListener('click', async () => {
   try {
     const fetchMoreCallback = async titleOfSearching => {
       const params = new URLSearchParams({
-        _limit: perPage,
+        _limit: perPage, // zmiana na 'perPage'
         _page: page,
       });
 
       const response = await axios.get(
-        `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo${params}`
+        `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&${params}`
       );
       return response.data;
     };
@@ -105,7 +105,8 @@ fetchMore.addEventListener('click', async () => {
                               <b>Downloads</b>
                               ${downloads}
                             </p>
-                          </div>`;
+                          </div>
+                      </div>`; // brakuje zamknięcia tagu 'div'
         })
         .join('');
       container.insertAdjacentHTML('afterbegin', result);
