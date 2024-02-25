@@ -61,8 +61,6 @@ button.addEventListener('click', async event => {
   }
 });
 
-const renderPhotos = photos => {};
-
 let page = 1;
 const perPage = 40;
 
@@ -70,10 +68,9 @@ fetchMore.addEventListener('click', async () => {
   try {
     const fetchMoreCallback = async titleOfSearching => {
       const params = new URLSearchParams({
-        _limit: perPage, // zmiana na 'perPage'
+        _limit: perPage,
         _page: page,
       });
-
       const response = await axios.get(
         `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&${params}`
       );
@@ -111,6 +108,7 @@ fetchMore.addEventListener('click', async () => {
         .join('');
       container.insertAdjacentHTML('afterbegin', result);
     };
+
     renderMorePhotos(fetchMorePhotos);
 
     page += 1;
