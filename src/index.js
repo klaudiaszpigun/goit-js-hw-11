@@ -3,7 +3,7 @@ import { fetchData } from './api';
 
 const input = document.querySelector('input');
 const button = document.querySelector('button');
-const container = document.querySelector('.container');
+const container = document.querySelector('.gallery');
 
 button.addEventListener('click', async event => {
   event.preventDefault();
@@ -16,18 +16,27 @@ button.addEventListener('click', async event => {
       const renderCode = response => {
         const array = response.hits;
         const result = array
-          .map(({ previewURL, likes, comments, views, downloads }) => {
-            return `<img src="${previewURL}" alt="${input.value}" width="150" height="84">
-                <div>
-                  <strong>likes:</strong>
-                  <p>${likes}</p>
-                  <strong>views:</strong>
-                  <p>${views}</p>
-                  <strong>comments:</strong>
-                  <p>${comments}</p>
-                  <strong>downloads:</strong>
-                  <p>${downloads}</p>
-                </div>`;
+          .map(({ webformatURL, likes, comments, views, downloads }) => {
+            return `<div class="photo-card">
+                      <img src="${webformatURL}" alt="${input.value}" loading="lazy" />
+                        <div class="info">
+                          <p class="info-item">
+                            <b>Likes</b>
+                            ${likes}
+                          </p>
+                          <p class="info-item">
+                            <b>Views</b>
+                            ${views}
+                          </p>
+                          <p class="info-item">
+                            <b>Comments</b>
+                            ${comments}
+                          </p>
+                          <p class="info-item">
+                            <b>Downloads</b>
+                            ${downloads}
+                          </p>
+                        </div>`;
           })
           .join('');
         container.insertAdjacentHTML('afterbegin', result);
