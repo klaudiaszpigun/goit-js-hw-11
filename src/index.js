@@ -9,7 +9,7 @@ const fetchMore = document.querySelector('.load-more');
 const fetchData = async nameOfPhotos => {
   const key = '42539798-27c3408c7f5dca4caada8a6c7';
   const response = await axios.get(
-    `https://pixabay.com/api/?key=${key}&q=${nameOfPhotos}&image_type=photo`
+    `https://pixabay.com/api/?key=${key}&q=${nameOfPhotos}&image_type=photo&_limit=40&page=1`
   );
   return response.data;
 };
@@ -62,21 +62,21 @@ button.addEventListener('click', async event => {
 });
 
 let page = 1;
-const perPage = 40;
+const per_page = 40;
 
 fetchMore.addEventListener('click', async () => {
   try {
     const fetchMoreCallback = async titleOfSearching => {
       const params = new URLSearchParams({
-        _limit: perPage,
-        _page: page,
+        _limit: per_page,
+        page: page,
       });
       const response = await axios.get(
         `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&${params}`
       );
       return response.data;
     };
-
+    page += 1;
     const fetchMorePhotos = await fetchMoreCallback(input.value);
 
     const renderMorePhotos = response => {
@@ -103,15 +103,14 @@ fetchMore.addEventListener('click', async () => {
                               ${downloads}
                             </p>
                           </div>
-                      </div>`; // brakuje zamknięcia tagu 'div'
+                  </div>`;
         })
         .join('');
-      container.insertAdjacentHTML('afterbegin', result);
+      container.insertAdjacentHTML('beforeend', result);
     };
 
     renderMorePhotos(fetchMorePhotos);
 
-    page += 1;
     if (page > 1) {
       fetchMore.textContent = 'fetch more photos';
     }
