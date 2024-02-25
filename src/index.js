@@ -1,11 +1,18 @@
 import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-import { fetchData } from './api';
 
 const input = document.querySelector('input');
 const button = document.querySelector('button');
 const container = document.querySelector('.gallery');
 const fetchMore = document.querySelector('.load-more');
+
+const fetchData = async nameOfPhotos => {
+  const key = '42539798-27c3408c7f5dca4caada8a6c7';
+  const response = await axios.get(
+    `https://pixabay.com/api/?key=${key}&q=${nameOfPhotos}&image_type=photo`
+  );
+  return response.data;
+};
 
 button.addEventListener('click', async event => {
   event.preventDefault();
@@ -57,7 +64,7 @@ button.addEventListener('click', async event => {
 const renderPhotos = photos => {};
 
 let page = 1;
-let perpage = 40;
+let perPage = 40;
 
 fetchMore.addEventListener('click', async () => {
   try {
@@ -89,6 +96,7 @@ fetchMore.addEventListener('click', async () => {
                           </div>`;
         })
         .join('');
+      container.insertAdjacentHTML('afterbegin', result);
     };
     renderMorePhotos(fetchMorePhotos);
 
@@ -101,7 +109,7 @@ fetchMore.addEventListener('click', async () => {
   }
 });
 
-const fetchMoreCallback = (titleOfSearching) => {
+const fetchMoreCallback = async titleOfSearching => {
   const params = new URLSearchParams({
     _limit: perPage,
     _page: page,
