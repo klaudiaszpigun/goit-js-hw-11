@@ -77,7 +77,7 @@ fetchMore.addEventListener('click', async () => {
         `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&orientation=horizontal&safesearch=true&${params}`
       );
       return response.data;
-    }; //
+    };
     page += 1;
     const fetchMorePhotos = await fetchMoreCallback(input.value);
     const numberOfPhotos = fetchMoreCallback(input.value).totalHits;
