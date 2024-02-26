@@ -119,7 +119,7 @@ fetchMore.addEventListener('click', async () => {
                             </p>
                           </div>
                   </div>`;
-        }) //
+        })
         .join('');
       container.insertAdjacentHTML('beforeend', result);
     };
