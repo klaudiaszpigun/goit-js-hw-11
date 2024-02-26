@@ -18,7 +18,7 @@ button.addEventListener('click', async event => {
   event.preventDefault();
   try {
     const response = await fetchData(input.value);
-    const total = response.total;
+    const total = response.totalHits;
 
     if (total !== undefined && total > 0) {
       Notify.success(`Hooray! We found ${total}`);
