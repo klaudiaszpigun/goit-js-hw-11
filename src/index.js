@@ -9,7 +9,7 @@ const fetchMore = document.querySelector('.load-more');
 const fetchData = async nameOfPhotos => {
   const key = '42539798-27c3408c7f5dca4caada8a6c7';
   const response = await axios.get(
-    `https://pixabay.com/api/?key=${key}&q=${nameOfPhotos}&image_type=photo&_limit=40&page=19`
+    `https://pixabay.com/api/?key=${key}&q=${nameOfPhotos}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=1`
   );
   return response.data;
 };
@@ -20,7 +20,7 @@ button.addEventListener('click', async event => {
     const response = await fetchData(input.value);
     const total = response.totalHits;
 
-    if (total !== undefined && total > 0) {
+    if (total !== undefined && total > 0 && total.trim() !== '') {
       Notify.success(`Hooray! We found ${total}`);
       const renderCode = response => {
         const array = response.hits;
@@ -62,17 +62,17 @@ button.addEventListener('click', async event => {
 });
 
 let page = 1;
-const per_page = 40;
+const limit = 40;
 
 fetchMore.addEventListener('click', async () => {
   try {
     const fetchMoreCallback = async titleOfSearching => {
       const params = new URLSearchParams({
-        _limit: per_page,
+        per_page: limit,
         page: page,
       });
       const response = await axios.get(
-        `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&${params}`
+        `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&orientation=horizontal&safesearch=true&${params}`
       );
       return response.data;
     };
@@ -112,7 +112,7 @@ fetchMore.addEventListener('click', async () => {
     renderMorePhotos(fetchMorePhotos);
 
     if (page > 1) {
-      fetchMore.textContent = 'fetch more photos';
+      fetchMore.textContent = ' Load more photos';
     }
   } catch (error) {
     console.log(error);
