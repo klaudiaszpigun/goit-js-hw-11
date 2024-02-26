@@ -82,7 +82,7 @@ fetchMore.addEventListener('click', async () => {
     const fetchMorePhotos = await fetchMoreCallback(input.value);
     const numberOfPhotos = fetchMoreCallback(input.value).totalHits;
 
-///////    if (
+    if (
       numberOfPhotos < limit ||
       numberOfPhotos === limit * page ||
       numberOfPhotos < limit * page
