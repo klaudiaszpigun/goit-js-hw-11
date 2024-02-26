@@ -20,7 +20,7 @@ button.addEventListener('click', async event => {
     const response = await fetchData(input.value);
     const total = response.totalHits;
 
-    if (total !== undefined && total > 0 && total.trim() !== '') {
+    if (total !== undefined && total > 0 && input.value.trim() !== '') {
       Notify.success(`Hooray! We found ${total}`);
       const renderCode = response => {
         const array = response.hits;
@@ -54,7 +54,9 @@ button.addEventListener('click', async event => {
 
       renderCode(response);
     } else {
-      Notify.failure('Try again');
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
     }
   } catch (error) {
     console.log(error);
@@ -78,6 +80,19 @@ fetchMore.addEventListener('click', async () => {
     };
     page += 1;
     const fetchMorePhotos = await fetchMoreCallback(input.value);
+    const totalHits = fetchMoreCallback(input.value).totalHits;
+
+    if (
+      totalHits < limit ||
+      totalHits === limit * page ||
+      totalHits < limit * page
+    ) {
+      console.log('End of search results reached');
+      fetchMore.classList.add('hidden');
+      Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
 
     const renderMorePhotos = response => {
       const array = response.hits;
