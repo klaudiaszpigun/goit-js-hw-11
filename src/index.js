@@ -80,12 +80,12 @@ fetchMore.addEventListener('click', async () => {
     };
     page += 1;
     const fetchMorePhotos = await fetchMoreCallback(input.value);
-    const totalHits = fetchMoreCallback(input.value).totalHits;
+    const numberOfPhotos = fetchMoreCallback(input.value).totalHits;
 
     if (
-      totalHits < limit ||
-      totalHits === limit * page ||
-      totalHits < limit * page
+      numberOfPhotos < limit ||
+      numberOfPhotos === limit * page ||
+      numberOfPhotos < limit * page
     ) {
       console.log('End of search results reached');
       fetchMore.classList.add('hidden');
