@@ -1,135 +1,160 @@
-import axios from 'axios';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const input = document.querySelector('input');
-const button = document.querySelector('button');
-const container = document.querySelector('.gallery');
-const fetchMore = document.querySelector('.load-more');
+const fetchImagesBtn = document.querySelector('#load-more-btn');
+const gallery = document.querySelector('.gallery');
+const form = document.querySelector('.search-form');
+const loader = document.querySelector('.loader');
+const input = document.querySelector('.search-input');
+const topScrollBtn = document.querySelector('.scroll-top');
+let lightbox;
 
-const fetchData = async nameOfPhotos => {
-  const key = '42539798-27c3408c7f5dca4caada8a6c7';
-  const response = await axios.get(
-    `https://pixabay.com/api/?key=${key}&q=${nameOfPhotos}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=1`
-  );
-  return response.data;
-};
+loader.style.display = 'none'; //////
+fetchImagesBtn.style.display = 'none';
+topScrollBtn.style.display = 'none';
 
-button.addEventListener('click', async event => {
+let currentPage = 1;
+const perPage = 40;
+
+form.addEventListener('submit', async event => {
   event.preventDefault();
+  const inputValue = input.value.trim();
+  if (!inputValue) return;
+
   try {
-    const response = await fetchData(input.value);
-    const total = response.totalHits;
+    loader.style.display = 'block';
+    topScrollBtn.style.display = 'block';
+    currentPage = 1;
+    const data = await getImages(inputValue, currentPage);
+    loader.style.display = 'none';
 
-    if (total !== undefined && total > 0 && input.value.trim() !== '') {
-      Notify.success(`Hooray! We found ${total}`);
-      const renderCode = response => {
-        const array = response.hits;
-        const result = array
-          .map(({ webformatURL, likes, comments, views, downloads }) => {
-            return `<div class="photo-card">
-                          <img src="${webformatURL}" alt="${input.value}" loading="lazy" />
-                            <div class="info">
-                              <p class="info-item">
-                                <b>Likes</b>
-                                ${likes}
-                              </p>
-                              <p class="info-item">
-                                <b>Views</b>
-                                ${views}
-                              </p>
-                              <p class="info-item">
-                                <b>Comments</b>
-                                ${comments}
-                              </p>
-                              <p class="info-item">
-                                <b>Downloads</b>
-                                ${downloads}
-                              </p>
-                            </div>`;
-          })
-          .join('');
-        container.insertAdjacentHTML('afterbegin', result);
-        fetchMore.classList.remove('load-more');
-      };
-
-      renderCode(response);
-    } else {
-      Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
+    if (!data.hits.length) {
+      Notiflix.Notify.failure('No images found for this search term');
+      gallery.innerHTML = '';
+      topScrollBtn.style.display = 'none';
+      fetchImagesBtn.style.display = 'none';
+      return;
     }
+
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+    gallery.innerHTML = renderImages(data.hits);
+
+    if (data.totalHits > perPage) {
+      fetchImagesBtn.style.display = 'block';
+    } else {
+      fetchImagesBtn.style.display = 'none';
+    }
+
+    if (!lightbox) {
+      lightbox = new SimpleLightbox('.gallery a', {
+        captions: true,
+        captionsData: 'alt',
+        captionDelay: 250,
+      });
+    }
+
+    scrollToTop();
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    topScrollBtn.style.display = 'none';
+    loader.style.display = 'none';
+    Notiflix.Notify.failure('Failed to fetch images');
   }
 });
 
-let page = 1;
-const limit = 40;
+async function getImages(name, page) {
+  const key = '42475479-1764a7314469942521760576b';
+  const searchParams = new URLSearchParams({
+    key: key,
+    q: name,
+    image_type: 'photo',
+    orientation: 'horizontal',
+    safesearch: true,
+    per_page: perPage,
+    page: page,
+  });
 
-fetchMore.addEventListener('click', async () => {
+  const response = await fetch(`https://pixabay.com/api/?${searchParams}`);
+  if (!response.ok) {
+    throw new Error(response.statusText);
+    topScrollBtn.style.display = 'none';
+  }
+  return response.json();
+}
+
+fetchImagesBtn.addEventListener('click', async () => {
   try {
-    const fetchMoreCallback = async titleOfSearching => {
-      const params = new URLSearchParams({
-        per_page: limit,
-        page: page,
-      });
-      const response = await axios.get(
-        `https://pixabay.com/api/?key=42539798-27c3408c7f5dca4caada8a6c7&q=${titleOfSearching}&image_type=photo&orientation=horizontal&safesearch=true&${params}`
-      );
-      return response.data;
-    }; //
-    page += 1;
-    const fetchMorePhotos = await fetchMoreCallback(input.value);
-    const numberOfPhotos = fetchMoreCallback(input.value).totalHits;
+    currentPage++;
+    loader.style.display = 'block';
 
-    if (
-      numberOfPhotos < limit ||
-      numberOfPhotos === limit * page ||
-      numberOfPhotos < limit * page
-    ) {
-      console.log('End of search results reached');
-      fetchMore.classList.add('hidden');
-      Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
+    const data = await getImages(input.value.trim(), currentPage);
+    loader.style.display = 'none';
+
+    if (!data.hits.length) {
+      Notiflix.Notify.info('No more images to load');
+      fetchImagesBtn.style.display = 'none';
+      return;
     }
 
-    const renderMorePhotos = response => {
-      const array = response.hits;
-      const result = array
-        .map(({ webformatURL, likes, comments, views, downloads }) => {
-          return `<div class="photo-card">
-                        <img src="${webformatURL}" alt="${input.value}" loading="lazy" />
-                          <div class="info">
-                            <p class="info-item">
-                              <b>Likes</b>
-                              ${likes}
-                            </p>
-                            <p class="info-item">
-                              <b>Views</b>
-                              ${views}
-                            </p>
-                            <p class="info-item">
-                              <b>Comments</b>
-                              ${comments}
-                            </p>
-                            <p class="info-item">
-                              <b>Downloads</b>
-                              ${downloads}
-                            </p>
-                          </div>
-                  </div>`;
-        })
-        .join('');
-      container.insertAdjacentHTML('beforeend', result);
-    };
+    gallery.innerHTML += renderImages(data.hits);
 
-    renderMorePhotos(fetchMorePhotos);
-
-    if (page > 1) {
-      fetchMore.textContent = ' Load more photos';
+    if (lightbox) {
+      lightbox.refresh();
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    loader.style.display = 'none';
+    Notiflix.Notify.failure('Failed to load more images');
+    topScrollBtn.style.display = 'none';
   }
+});
+
+function renderImages(images) {
+  return images
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `
+      <li class="gallery-item">
+        <a class="gallery-link" href="${largeImageURL}">
+          <img class="gallery-image" src="${webformatURL}" alt="${tags}" width="298" />
+        </a>
+        <div class="container-stats">
+          <div class="block">
+            <h2 class="title">Likes</h2>
+            <p class="amount">${likes}</p>
+          </div>
+          <div class="block">
+            <h2 class="title">Views</h2>
+            <p class="amount">${views}</p>
+          </div>
+          <div class="block">
+            <h2 class="title">Comments</h2>
+            <p class="amount">${comments}</p>
+          </div>
+          <div class="block">
+            <h2 class="title">Downloads</h2>
+            <p class="amount">${downloads}</p>
+          </div>
+        </div>
+      </li>`;
+      }
+    )
+    .join('');
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+topScrollBtn.addEventListener('click', () => {
+  scrollToTop();
 });
