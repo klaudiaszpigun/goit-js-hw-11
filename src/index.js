@@ -10,7 +10,7 @@ const input = document.querySelector('.search-input');
 const topScrollBtn = document.querySelector('.scroll-top');
 let lightbox;
 
-loader.style.display = 'none'; //////////
+loader.style.display = 'none'; ///////
 fetchImagesBtn.style.display = 'none';
 topScrollBtn.style.display = 'none';
 
