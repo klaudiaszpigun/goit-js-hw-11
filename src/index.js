@@ -149,5 +149,3 @@ function scrollToTop() {
     behavior: 'smooth',
   });
 }
-
-//
