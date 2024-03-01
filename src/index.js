@@ -152,7 +152,3 @@ function scrollToTop() {
 
 //
 //
-//
-//
-//
-//
