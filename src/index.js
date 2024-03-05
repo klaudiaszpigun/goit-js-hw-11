@@ -13,7 +13,7 @@ loader.style.display = 'none';
 imagesButton.style.display = 'none';
 
 let currentPage = 1;
-//
+
 const perPage = 40;
 
 form.addEventListener('submit', async event => {
@@ -25,7 +25,7 @@ form.addEventListener('submit', async event => {
     loader.style.display = 'block';
     const data = await getImages(inputValue, currentPage);
     loader.style.display = 'none';
-
+    ///
     if (!data.hits.length) {
       Notiflix.Notify.failure('No images found for this search term');
       gallery.innerHTML = '';
