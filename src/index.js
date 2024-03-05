@@ -13,6 +13,7 @@ loader.style.display = 'none';
 imagesButton.style.display = 'none';
 
 let currentPage = 1;
+//
 const perPage = 40;
 
 form.addEventListener('submit', async event => {
